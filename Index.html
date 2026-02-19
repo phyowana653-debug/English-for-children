@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Learning Hub</title>
+    <style>
+        :root { --primary: #00d2ff; --bg: #0b0e14; --card-bg: #1e293b; --accent: #ff007f; }
+        body { font-family: 'Comic Sans MS', cursive, sans-serif; margin: 0; background: var(--bg); color: white; text-align: center; }
+        .container { padding: 15px; }
+        h1 { color: var(--primary); font-size: 1.8em; margin-bottom: 10px; }
+        
+        /* Tab Navigation */
+        .tabs { display: flex; justify-content: center; margin-bottom: 15px; gap: 10px; }
+        .tab-btn { padding: 10px 15px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; background: #334155; color: white; transition: 0.3s; }
+        .tab-btn.active { background: var(--accent); color: white; }
+
+        .content { display: none; animation: fadeIn 0.4s; }
+        .content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Display Box for ABC */
+        #display-box { 
+            margin: 10px auto; width: 85%; max-width: 350px; padding: 20px;
+            background: var(--card-bg); border: 3px solid var(--primary); border-radius: 25px;
+            min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        #big-letter { font-size: 4em; margin: 0; color: var(--accent); line-height: 1.2; }
+        #word-text { font-size: 1.2em; margin-top: 5px; color: var(--primary); font-weight: bold; }
+
+        /* Alphabet Grid */
+        .alphabet-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 500px; margin: auto; }
+        .letter-card { 
+            background: #334155; border-radius: 10px;
+            padding: 12px 0; font-size: 1.5em; font-weight: bold; cursor: pointer;
+            box-shadow: 0 3px #1f2937; color: white; transition: 0.1s;
+        }
+        .letter-card:active { transform: translateY(2px); box-shadow: none; background: #E74C3C; }
+
+        /* Poem Section */
+        .poem-card { background: var(--card-bg); padding: 18px; border-radius: 18px; border: 2px solid var(--accent); margin-bottom: 12px; }
+        .poem-title { color: var(--primary); font-size: 1.3em; margin-bottom: 8px; }
+        .poem-text { font-size: 1em; line-height: 1.6; white-space: pre-wrap; margin-bottom: 12px; }
+        .play-btn { background: var(--primary); color: black; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .play-btn:active { transform: scale(0.95); }
+
+        /* Start Voice Button */
+        #start-voice-btn {
+            background: #22C55E; color: white; padding: 12px 25px; 
+            border-radius: 30px; border: none; font-size: 1.1em; 
+            font-weight: bold; margin-bottom: 15px; cursor: pointer;
+            box-shadow: 0 4px #166534; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📚 English Learning Hub</h1>
+        
+        <button id="start-voice-btn" onclick="initVoice()">📣 Start Voice</button>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('alphabet-eng')">A B C</button>
+            <button class="tab-btn" onclick="showTab('poems-eng')">English Poems</button>
+            </div>
+
+        <div id="alphabet-eng" class="content active">
+            <div id="display-box">
+                <p id="big-letter">?</p>
+                <p id="word-text">Tap a letter!</p>
+            </div>
+            <div class="alphabet-grid" id="eng-grid"></div>
+        </div>
+
+        <div id="poems-eng" class="content">
+            <div id="eng-poem-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // English Alphabet Data
+        const engAlphaData = {
+            'A': 'Apple', 'B': 'Ball', 'C': 'Cat', 'D': 'Dog', 'E': 'Elephant',
+            'F': 'Fish', 'G': 'Goat', 'H': 'Hat', 'I': 'Ice-cream', 'J': 'Jam',
+            'K': 'Kite', 'L': 'Lion', 'M': 'Monkey', 'N': 'Nest', 'O': 'Orange',
+            'P': 'Penguin', 'Q': 'Queen', 'R': 'Rabbit', 'S': 'Sun', 'T': 'Tiger',
+            'U': 'Umbrella', 'V': 'Van', 'W': 'Watch', 'X': 'Xylophone', 'Y': 'Yak', 'Z': 'Zebra'
+        };
+
+        // English Poems Data
+        const engPoems = [
+            {
+                title: "Twinkle, Twinkle, Little Star",
+                text: "Twinkle, twinkle, little star,\nHow I wonder what you are.\nUp above the world so high,\nLike a diamond in the sky.\nTwinkle, twinkle, little star,\nHow I wonder what you are.",
+                speak: "Twinkle, twinkle, little star. How I wonder what you are. Up above the world so high, like a diamond in the sky. Twinkle, twinkle, little star. How I wonder what you are."
+            },
+            {
+                title: "Baa, Baa, Black Sheep",
+                text: "Baa, baa, black sheep,\nHave you any wool?\nYes, sir, yes, sir,\nThree bags full.\nOne for the master,\nOne for the dame,\nAnd one for the little boy\nWho lives down the lane.",
+                speak: "Baa, baa, black sheep, have you any wool? Yes, sir, yes, sir, three bags full. One for the master, one for the dame, and one for the little boy who lives down the lane."
+            },
+            {
+                title: "Humpty Dumpty",
+                text: "Humpty Dumpty sat on a wall,\nHumpty Dumpty had a great fall.\nAll the king's horses and all the king's men,\nCouldn't put Humpty together again.",
+                speak: "Humpty Dumpty sat on a wall. Humpty Dumpty had a great fall. All the king's horses and all the king's men couldn't put Humpty together again."
+            }
+        ];
+
+        // Global Voice Initialization
+        function initVoice() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const welcome = new SpeechSynthesisUtterance("Hello! Let's learn English!");
+                welcome.lang = 'en-US';
+                window.speechSynthesis.speak(welcome);
+                document.getElementById('start-voice-btn').style.display = 'none';
+            } else {
+                alert("Your browser does not support speech synthesis. Please try Chrome or Firefox.");
+            }
+        }
+
+        // --- Tab Switching Logic ---
+        function showTab(tabId) {
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            window.speechSynthesis.cancel(); // Stop any ongoing speech when switching tabs
+        }
+
+        // --- English ABC Section ---
+        const engGrid = document.getElementById('eng-grid');
+        const bigLetter = document.getElementById('big-letter');
+        const wordText = document.getElementById('word-text');
+
+        Object.keys(engAlphaData).forEach(char => {
+            const card = document.createElement('div');
+            card.className = 'letter-card';
+            card.innerText = char;
+            card.onclick = () => speakEnglishLetter(char);
+            engGrid.appendChild(card);
+        });
+
+        function speakEnglishLetter(char) {
+            const word = engAlphaData[char];
+            bigLetter.innerText = char;
+            wordText.innerText = `${char} is for ${word}`;
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(`${char}. ${word}.`);
+                msg.lang = 'en-US';
+                msg.rate = 0.8; 
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // --- English Poems Section ---
+        const engPoemContainer = document.getElementById('eng-poem-container');
+        engPoems.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'poem-card';
+            card.innerHTML = `
+                <div class="poem-title">${p.title}</div>
+                <div class="poem-text">${p.text}</div>
+                <button class="play-btn" onclick="speakEnglishPoem('${p.speak}')">🔊 Listen</button>
+            `;
+            engPoemContainer.appendChild(card);
+        });
+
+        function speakEnglishPoem(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                msg.rate = 0.9;
+                window.speechSynthesis.speak(msg);
+            }
+        }
+    </script>
+</body>
+</html>
+#ffffff
